@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeanCloud 登录页面</title>
+    <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .mdui-card {
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mdui-card">
+        <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title">登录</div>
+        </div>
+        <div class="mdui-card-content">
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">用户名</label>
+                <input class="mdui-textfield-input" type="text" id="username" />
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">密码</label>
+                <input class="mdui-textfield-input" type="password" id="password" />
+            </div>
+            <button class="mdui-btn mdui-btn-block mdui-color-theme-accent" onclick="login()">登录</button>
+            <div id="error-message" class="mdui-text-color-red mdui-text-center mdui-m-t-2"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+    <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+    <script>
+        // 初始化 LeanCloud
+        AV.init({
+            appId: 'lsyeSKo9KpxNrIxcm0kCY7HV-MdYXbMMI',
+            appKey: 'xJamKac1zk5M9w0X8DdO9KSP',
+            serverURL: 'https://lsyesko9.api.lncldglobal.com'
+        });
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            AV.User.logIn(username, password).then((user) => {
+                mdui.snackbar({
+                    message: 'Logged in,back to ID page',
+                    position: 'top'
+                });
+                // 写入 cookies
+                setCookie('username', username, 7); 
+                setCookie('sessionToken', user.getSessionToken(), 7); 
+                // 跳转到指定页面
+                window.location.href = 'https://id.cpin.top';
+            }).catch((error) => {
+                document.getElementById('error-message').innerText = `登录失败: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+
+</html>
+    
